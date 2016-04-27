@@ -7,7 +7,7 @@
 #include "constant.h"
 
 const double KERNAL_POLY_CONSTANT = 4.921875;
-const double KERNAL_POLY_GRAD_CONSTANT = 9.4000888;
+const double KERNAL_POLY_GRAD_CONSTANT = -9.4000888;
 const double KERNAL_POLY_LAP_CONSTANT = 9.4000888;
 const double KERNAL_SPIK_GRAD_CONSTANT = -14.323944878;
 const double KERNAL_VISC_LAPLACIAN_CONSTANT = 14.323944878;
@@ -31,7 +31,6 @@ public:
 	}
 	void countForce(const vector<Particle> &neighbour, const vector<double> &r) {
 		force = Vector3D(0, g, 0);
-		
 		int l = neighbour.size();		
 		for (int i = 0; i < l; ++i) {
 			force += mass * 0.5 / density * KernalSpik(neighbour[i], r[i]) * (pressure + neighbour[i].getPressure());
@@ -55,12 +54,14 @@ public:
 		if (color_grad.norm() > 1e-6) color_grad = - color_lap * color_grad.unit();
 		else color_grad = Vector3D(0.0f, 0.0f, 0.0f);
 	}
+	void countVelocity() {
+		Vector3D acce = (force + viscosity + tenssion) / density;
+		velocity += acce * DELTA_TIME / 1000;		
+	}
 	void move() {
-//		printf("force: %lf, %lf, %lf\n", force[0], force[1], force[2]);
+		//printf("force: %lf, %lf, %lf\n", force[0], force[1], force[2]);
 		//printf("viscosity: %lf, %lf, %lf\n", viscosity[0], viscosity[1], viscosity[2]);
 		//printf("tenssion: %lf, %lf, %lf\n", tenssion[0], tenssion[1], tenssion[2]);
-		Vector3D acce = (force + viscosity + tenssion) / density;
-		velocity += acce * DELTA_TIME / 1000;
 		//printf("velocity0: %lf, %lf, %lf\n", velocity[0], velocity[1], velocity[2]);		
 		position += velocity * DELTA_TIME / 1000;
 		//printf("position: %lf, %lf, %lf\n", position[0], position[1], position[2]);
@@ -69,8 +70,8 @@ public:
 	}
 	void check(const Vector3D &bound) {
 		for (int i = 0; i < 3; ++i) {
-			if (abs(position[i]) > bound[i] / 2) {
-				velocity[i] *= -1;
+			if (abs(position[i]) > bound[i] - 1e-4 && velocity[i] * position[i] > 0) {
+				velocity[i] *= -0.5f;
 			}
 		}
 		//printf("velocity1: %lf, %lf, %lf\n\n", velocity[0], velocity[1], velocity[2]);		
@@ -83,7 +84,7 @@ public:
 		return KERNAL_POLY_LAP_CONSTANT / pow(SMOOTHING_WIDTH, 9) * (SMOOTHING_WIDTH2 - r * r) * (7.0f * r * r - 3.0f * SMOOTHING_WIDTH2);
 	}
 	Vector3D KernalPolyGrad(const Particle &_particle, double r) const {
-		return -KERNAL_POLY_GRAD_CONSTANT / pow(SMOOTHING_WIDTH, 9) * pow(SMOOTHING_WIDTH2 - r * r, 2) * _particle.getPosition();
+		return KERNAL_POLY_GRAD_CONSTANT / pow(SMOOTHING_WIDTH, 9) * pow(SMOOTHING_WIDTH2 - r * r, 2) * _particle.getPosition();
 	}
     Vector3D KernalSpik(const Particle &_particle, double r) const {
         return KERNAL_SPIK_GRAD_CONSTANT / pow(SMOOTHING_WIDTH, 6) * pow(SMOOTHING_WIDTH - r, 2) * _particle.getPosition();

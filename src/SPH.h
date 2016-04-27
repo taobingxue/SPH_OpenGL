@@ -53,8 +53,9 @@ public:
 			(*it0).countColorfield(neighbour_list[i], dis_list[i]);
 		}
 		for (auto it0 = particle_list.begin(); it0 != particle_list.end(); ++it0) {
-			(*it0).move();
+			(*it0).countVelocity();
 			(*it0).check(bound);
+			(*it0).move();
 		}
 	}
 	int size() {

@@ -10,10 +10,15 @@
 #include "constant.h"
 #include "vector3D.h"
 #include "SPH.h"
+#include "MarchingCube.h"
 
 using namespace std;
 
 SPH sph;
+
+bool debug = false;
+bool is_press = false;
+
 
 void init() {
 	srand(time(NULL));
@@ -133,21 +138,38 @@ void drawSphere(const Vector3D _pos) {
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-//	glEnable(GL_COLOR_MATERIAL);
 	for (int i = 0; i < 12; i++) {
 		drawEdge(WALL_EDGE[i], WALL_SCALE[i]);
 	}
-	
-	list<Particle> particle_list = sph.getList();
-	for (Particle &particle : particle_list) {
-		drawSphere(particle.getPosition());
+
+	if (debug) {
+		list<Particle> particle_list = sph.getList();
+		for (Particle &particle : particle_list) {
+			drawSphere(particle.getPosition());
+			Vector3D p = particle.getPosition();
+			printf("position: %lf, %lf, %lf\n", p[0], p[1], p[2]);
+			p = particle.getVelocity();
+			printf("velocity: %lf, %lf, %lf\n", p[0], p[1], p[2]);
+		}
+	} else {
+		list<Particle> particle_list = sph.getList();
+		vector<Vector3D> v_list;
+		vector<int> index_list;
+		MarchingCube marching_cube(FRAME_LENGTH, GRID_LENGTH, &particle_list);
+		marching_cube.count(v_list, index_list);
+		
+		// printf("size: %d\n", (int)index_list.size());
+
+		glEnable(GL_COLOR_MATERIAL);
+		glBegin(GL_TRIANGLES);
+			glColor4f(color4_sphere[0], color4_sphere[1], color4_sphere[2], color4_sphere[3]);
+			for (int i = 0; i < index_list.size(); ++i) {
+				int p = index_list[i];
+				glVertex3f(v_list[p][0] + FRAME_BASE[0], v_list[p][1] + FRAME_BASE[1], v_list[p][2] + FRAME_BASE[2]);
+			}
+		glEnd();	
+		glDisable(GL_COLOR_MATERIAL);
 	}
-//	for (i=0; i<5; i++) drawRect(wall[i], Wcolor[i][0], Wcolor[i][1], Wcolor[i][2]);
-//	glDisable(GL_COLOR_MATERIAL);
-	
-//	for (i=1; i<8; i++) 
-//		if (i != 6) drawObject(i);
-	
 	glFlush();
 	glutSwapBuffers();
 }
@@ -175,6 +197,9 @@ void keyboard(unsigned char key, int x, int y) {
 		case 'A':
 			sph.add(Particle(Vector3D(0, 0, 0), Vector3D(0, 0, 0)));
 			break;
+		case 'c':
+			debug = !debug;
+			break;
 		case 27:
 			exit(0);
 			break;
@@ -182,6 +207,14 @@ void keyboard(unsigned char key, int x, int y) {
 			break;
 	}
 }
+/*
+void mousepress(int button, int state, int x, int y) {
+	if (button)
+}
+
+void mousemove(int x, int y) {
+	
+}*/
 
 int main(int argc, char **argv) {
 	glutInit(&argc, argv);
@@ -191,13 +224,15 @@ int main(int argc, char **argv) {
 	glutCreateWindow("SPH - ^.^");
 
 	init();
-	for (int i = -5; i < 5; ++i )
+	for (int i = -5; i < -2; ++i )
 		for (int j = -5; j < 5; ++j)
 			for (int k = -5; k < 5; ++k)
 				sph.add(Particle(Vector3D(0 + i * 0.8, 0 + j * 0.8, 0 + k * 0.8), Vector3D(0, 0, 0)));
 
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
+	//glutMouseFunc();
+//	glutMotionFunc();
 	glutTimerFunc(40, render, 0);
 	glutReshapeFunc(reshape);
 	glutMainLoop();
