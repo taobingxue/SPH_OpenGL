@@ -21,12 +21,14 @@ class Vector3D {
          * Initializes to vector (x,y,z).
          */
         Vector3D( double x, double y, double z) : x( x ), y( y ), z( z ) { }
-
+		Vector3D( const double value[] ) : x( value[0] ), y( value[1] ), z( value[2] ) { }
+		
         /**
          * Constructor.
          * Initializes to vector (c,c,c)
          */
         Vector3D( double c ) : x( c ), y( c ), z( c ) { }
+		
 
         /**
          * Constructor.

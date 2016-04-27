@@ -10,7 +10,8 @@ using namespace std;
 
 class SPH {
 public:
-	SPH(): particle_list(0) {}
+	SPH() {}
+	SPH(const double _bound[]): particle_list(0), bound(_bound) {}
 	void add(Particle _particle) {
 		particle_list.push_back(_particle);
 	}
@@ -53,6 +54,7 @@ public:
 		}
 		for (auto it0 = particle_list.begin(); it0 != particle_list.end(); ++it0) {
 			(*it0).move();
+			(*it0).check(bound);
 		}
 	}
 	int size() {
@@ -64,6 +66,7 @@ public:
 	
 private:
 	list<Particle> particle_list;
+	Vector3D bound;
 };
 
 #endif

@@ -11,10 +11,15 @@
 #include "vector3D.h"
 #include "SPH.h"
 
+using namespace std;
+
+SPH sph;
+
 void init() {
 	srand(time(NULL));
+	sph = SPH(FRAME_LENGTH);
 	
-	float light_position[2][4] = {{0, 0, 0.5, 0}, {FRAME_BASE[0], FRAME_BASE[1], FRAME_BASE[2], 1}};
+	GLfloat light_position[2][4] = {{0, 0, 0.5, 0}, {(float)FRAME_BASE[0], (float)FRAME_BASE[1], (float)FRAME_BASE[2], 1}};
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position[0]);
 	glLightfv(GL_LIGHT1, GL_POSITION, light_position[1]);
 	glEnable(GL_LIGHTING);
@@ -46,7 +51,7 @@ void reshape(GLsizei width, GLsizei height)
 	if(height <= 0) {
 		height = 1;
 	}
-	gluPerspective(75.0, (GLfloat)width/(GLfloat)height, 0.5, 500);
+	gluPerspective(75.0, (GLdouble)width/(GLdouble)height, 0.5, 500);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -98,7 +103,7 @@ void drawObject(int index) {
 	*/
 }
 
-void drawEdge(const float _pos[], const float _scale[]) {
+void drawEdge(const double _pos[], const double _scale[]) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glPushMatrix();
@@ -112,12 +117,30 @@ void drawEdge(const float _pos[], const float _scale[]) {
 	glPopMatrix();
 }
 
+void drawSphere(const Vector3D _pos) {
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glPushMatrix();
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color4_sphere);
+	
+	glTranslatef(_pos[0] + FRAME_BASE[0], _pos[1] + FRAME_BASE[1], _pos[2] + FRAME_BASE[2]);
+	glRotated(0, 0, 0, 0);
+	glutSolidSphere(0.1, 100, 100);
+	
+	glPopMatrix();	
+}
+
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 //	glEnable(GL_COLOR_MATERIAL);
 	for (int i = 0; i < 12; i++) {
 		drawEdge(WALL_EDGE[i], WALL_SCALE[i]);
+	}
+	
+	list<Particle> particle_list = sph.getList();
+	for (Particle &particle : particle_list) {
+		drawSphere(particle.getPosition());
 	}
 //	for (i=0; i<5; i++) drawRect(wall[i], Wcolor[i][0], Wcolor[i][1], Wcolor[i][2]);
 //	glDisable(GL_COLOR_MATERIAL);
@@ -141,24 +164,23 @@ void render(int value) {
 		cubePosition += cubeDelta;
 	} else angle[status] = (angle[status] + 10) % 360;
 */
+	sph.move();
 	glutTimerFunc(40, render, 0);
 	glutPostRedisplay();
 }
 
 void keyboard(unsigned char key, int x, int y) {
-	/*
 	switch (key) {
-		case 'q':
-		case 'Q':
-			status = 0;
+		case 'a':
+		case 'A':
+			sph.add(Particle(Vector3D(0, 0, 0), Vector3D(0, 0, 0)));
 			break;
 		case 27:
 			exit(0);
 			break;
 		default:
-			status = key - 48;
+			break;
 	}
-	*/
 }
 
 int main(int argc, char **argv) {
@@ -169,6 +191,10 @@ int main(int argc, char **argv) {
 	glutCreateWindow("SPH - ^.^");
 
 	init();
+	for (int i = -5; i < 5; ++i )
+		for (int j = -5; j < 5; ++j)
+			for (int k = -5; k < 5; ++k)
+				sph.add(Particle(Vector3D(0 + i * 0.8, 0 + j * 0.8, 0 + k * 0.8), Vector3D(0, 0, 0)));
 
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
