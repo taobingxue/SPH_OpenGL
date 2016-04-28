@@ -27,7 +27,7 @@ public:
 		}
 	}
 	void countPressure(const vector<Particle> &neighbour, const vector<double> &r) {
-		pressure =  0.5 * (density - 1.2f);
+		pressure =  2 * (density - 12);
 	}
 	void countForce(const vector<Particle> &neighbour, const vector<double> &r) {
 		force = Vector3D(0, g, 0);
@@ -51,12 +51,12 @@ public:
 			color_grad += mass / density * KernalPolyGrad(neighbour[i], r[i]);
 			color_lap += mass / density * KernalPolyLap(neighbour[i], r[i]);
 		}
-		if (color_grad.norm() > 1e-6) color_grad = - color_lap * color_grad.unit();
-		else color_grad = Vector3D(0.0f, 0.0f, 0.0f);
+		if (color_grad.norm() > 1e-6) tenssion = - color_lap * color_grad.unit();
+		else tenssion = Vector3D(0.0f, 0.0f, 0.0f);
 	}
-	void countVelocity() {
+	void countVelocity(const Vector3D &base_move) {
 		Vector3D acce = (force + viscosity + tenssion) / density;
-		velocity += acce * DELTA_TIME / 1000;		
+		velocity += acce * DELTA_TIME / 1000 + base_move / DELTA_TIME * 50;	
 	}
 	void move() {
 		//printf("force: %lf, %lf, %lf\n", force[0], force[1], force[2]);
@@ -84,10 +84,10 @@ public:
 		return KERNAL_POLY_LAP_CONSTANT / pow(SMOOTHING_WIDTH, 9) * (SMOOTHING_WIDTH2 - r * r) * (7.0f * r * r - 3.0f * SMOOTHING_WIDTH2);
 	}
 	Vector3D KernalPolyGrad(const Particle &_particle, double r) const {
-		return KERNAL_POLY_GRAD_CONSTANT / pow(SMOOTHING_WIDTH, 9) * pow(SMOOTHING_WIDTH2 - r * r, 2) * _particle.getPosition();
+		return KERNAL_POLY_GRAD_CONSTANT / pow(SMOOTHING_WIDTH, 9) * pow(SMOOTHING_WIDTH2 - r * r, 2) * (_particle.getPosition() - position);
 	}
     Vector3D KernalSpik(const Particle &_particle, double r) const {
-        return KERNAL_SPIK_GRAD_CONSTANT / pow(SMOOTHING_WIDTH, 6) * pow(SMOOTHING_WIDTH - r, 2) * _particle.getPosition();
+        return KERNAL_SPIK_GRAD_CONSTANT / pow(SMOOTHING_WIDTH, 6) * pow(SMOOTHING_WIDTH - r, 2) * (_particle.getPosition() - position);
     }
 	double KernalVisc(const Particle &_particle, double r) const {
         return KERNAL_VISC_LAPLACIAN_CONSTANT / pow(SMOOTHING_WIDTH, 6) * (SMOOTHING_WIDTH - r);		

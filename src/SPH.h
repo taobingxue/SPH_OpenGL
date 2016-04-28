@@ -11,12 +11,15 @@ using namespace std;
 class SPH {
 public:
 	SPH() {}
-	SPH(const double _bound[]): particle_list(0), bound(_bound) {}
+	SPH(const double _bound[]): particle_list(0), bound(_bound), base_move(0.0f, 0.0f, 0.0f) {}
 	void add(Particle _particle) {
 		particle_list.push_back(_particle);
 	}
 	void remove() {
 		if (!particle_list.empty()) particle_list.pop_front();
+	}
+	void setBase(const Vector3D &base_vec) {
+		base_move = base_vec;
 	}
 	void move() {
 		int l = particle_list.size();
@@ -30,6 +33,7 @@ public:
 			for (auto it1 = ++it0; it1 != particle_list.end(); ++it1, ++j) {
 				Particle p1 = *it1;
 				double r = (p0.getPosition() - p1.getPosition()).norm();
+				
 				if (r < SMOOTHING_WIDTH) {
 					neighbour_list[i].push_back(p1);
 					dis_list[i].push_back(r);
@@ -53,10 +57,11 @@ public:
 			(*it0).countColorfield(neighbour_list[i], dis_list[i]);
 		}
 		for (auto it0 = particle_list.begin(); it0 != particle_list.end(); ++it0) {
-			(*it0).countVelocity();
+			(*it0).countVelocity(base_move);
 			(*it0).check(bound);
 			(*it0).move();
 		}
+		base_move = Vector3D(0.0f, 0.0f, 0.0f);
 	}
 	int size() {
 		return particle_list.size();
@@ -68,6 +73,7 @@ public:
 private:
 	list<Particle> particle_list;
 	Vector3D bound;
+	Vector3D base_move;
 };
 
 #endif

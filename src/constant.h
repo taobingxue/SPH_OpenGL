@@ -2,8 +2,8 @@
 #define CONSTANT_H
 
 const int PARTICLE_MAX = 1000;
-const double PARTICLE_RADIUS = 0.45f;
-const double GRID_LENGTH = 0.5f;
+const double PARTICLE_RADIUS = 2.0f;
+const double GRID_LENGTH = 3.3f;
 const double SMOOTHING_WIDTH = 1;
 const double SMOOTHING_WIDTH2 = SMOOTHING_WIDTH * SMOOTHING_WIDTH;
 const double SMOOTHING_WIDTH3 = SMOOTHING_WIDTH * SMOOTHING_WIDTH2;
@@ -21,21 +21,24 @@ const float color4_white[] = {1, 1, 1, 1};
 const float color4_black[] = {0, 0, 0, 1};
 const float color4_sphere[] = {0.5f, 0, 0, 1};
 
+const int WINDOW_WIDTH = 800;
+const int WINDOW_HEIGHT = 600;
+
 const double FRAME_LENGTH[3] = {9, 5, 10};
-const double FRAME_BASE[3] = {0, -2, -20};
+double FRAME_BASE[3] = {0, -2, -20};
 const double WALL_EDGE[12][3] = {
-	{FRAME_BASE[0] - FRAME_LENGTH[0], FRAME_BASE[1]                  , FRAME_BASE[2] + FRAME_LENGTH[2]},
-	{FRAME_BASE[0] + FRAME_LENGTH[0], FRAME_BASE[1]                  , FRAME_BASE[2] + FRAME_LENGTH[2]},
-	{FRAME_BASE[0] - FRAME_LENGTH[0], FRAME_BASE[1]                  , FRAME_BASE[2] - FRAME_LENGTH[2]},
-	{FRAME_BASE[0] + FRAME_LENGTH[0], FRAME_BASE[1]                  , FRAME_BASE[2] - FRAME_LENGTH[2]},	
-	{FRAME_BASE[0] - FRAME_LENGTH[0], FRAME_BASE[1] - FRAME_LENGTH[1], FRAME_BASE[2]                  },
-	{FRAME_BASE[0] + FRAME_LENGTH[0], FRAME_BASE[1] - FRAME_LENGTH[1], FRAME_BASE[2]                  },
-	{FRAME_BASE[0] - FRAME_LENGTH[0], FRAME_BASE[1] + FRAME_LENGTH[1], FRAME_BASE[2]                  },
-	{FRAME_BASE[0] + FRAME_LENGTH[0], FRAME_BASE[1] + FRAME_LENGTH[1], FRAME_BASE[2]                  },
-	{FRAME_BASE[0]                  , FRAME_BASE[1] - FRAME_LENGTH[1], FRAME_BASE[2] + FRAME_LENGTH[2]},
-	{FRAME_BASE[0]                  , FRAME_BASE[1] + FRAME_LENGTH[1], FRAME_BASE[2] + FRAME_LENGTH[2]},
-	{FRAME_BASE[0]                  , FRAME_BASE[1] - FRAME_LENGTH[1], FRAME_BASE[2] - FRAME_LENGTH[2]},
-	{FRAME_BASE[0]                  , FRAME_BASE[1] + FRAME_LENGTH[1], FRAME_BASE[2] - FRAME_LENGTH[2]}};
+	{ - FRAME_LENGTH[0], 0                ,   FRAME_LENGTH[2]},
+	{   FRAME_LENGTH[0], 0                ,   FRAME_LENGTH[2]},
+	{ - FRAME_LENGTH[0], 0                , - FRAME_LENGTH[2]},
+	{   FRAME_LENGTH[0], 0                , - FRAME_LENGTH[2]},	
+	{ - FRAME_LENGTH[0], - FRAME_LENGTH[1], 0                },
+	{   FRAME_LENGTH[0], - FRAME_LENGTH[1], 0                },
+	{ - FRAME_LENGTH[0],   FRAME_LENGTH[1], 0                },
+	{   FRAME_LENGTH[0],   FRAME_LENGTH[1], 0                },
+	{   0              , - FRAME_LENGTH[1],   FRAME_LENGTH[2]},
+	{   0              ,   FRAME_LENGTH[1],   FRAME_LENGTH[2]},
+	{   0              , - FRAME_LENGTH[1], - FRAME_LENGTH[2]},
+	{   0              ,   FRAME_LENGTH[1], - FRAME_LENGTH[2]}};
 const double WALL_SCALE[12][3] = {
 	{0.1, FRAME_LENGTH[1] * 2, 0.1}, {0.1, FRAME_LENGTH[1] * 2, 0.1}, {0.1, FRAME_LENGTH[1] * 2, 0.1}, {0.1, FRAME_LENGTH[1] * 2, 0.1},
 	{0.1, 0.1, FRAME_LENGTH[2] * 2}, {0.1, 0.1, FRAME_LENGTH[2] * 2}, {0.1, 0.1, FRAME_LENGTH[2] * 2}, {0.1, 0.1, FRAME_LENGTH[2] * 2},
