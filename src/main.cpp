@@ -119,6 +119,7 @@ void drawEdge(const double _pos[], const double _scale[]) {
 	glTranslatef(_pos[0] + FRAME_BASE[0], _pos[1] + FRAME_BASE[1], _pos[2] + FRAME_BASE[2]);
 	glRotated(0, 0, 0, 0);
 	glScalef(_scale[0], _scale[1], _scale[2]);
+	//glScalef(FRAME_SCALE[0], FRAME_SCALE[1], FRAME_SCALE[2]);		
 	glutSolidCube(1);
 	
 	glPopMatrix();
@@ -131,8 +132,9 @@ void drawSphere(const Vector3D _pos) {
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color4_sphere);
 	
 	glTranslatef(_pos[0] + FRAME_BASE[0], _pos[1] + FRAME_BASE[1], _pos[2] + FRAME_BASE[2]);
+	//glScalef(FRAME_SCALE[0], FRAME_SCALE[1], FRAME_SCALE[2]);	
 	glRotated(0, 0, 0, 0);
-	glutSolidSphere(0.15f, 100, 100);
+	glutSolidSphere(0.03f, 100, 100);
 	
 	glPopMatrix();	
 }
@@ -143,6 +145,8 @@ void display() {
 	for (int i = 0; i < 12; i++) {
 		drawEdge(WALL_EDGE[i], WALL_SCALE[i]);
 	}
+	
+//	drawSphere(Vector3D(0, 0, 0));
 
 	if (debug) {
 		list<Particle> particle_list = sph.getList();
@@ -194,25 +198,30 @@ void render(int value) {
 	if (pos_now[0] != pos_pre[0] || pos_now[1] != pos_pre[1] || pos_now[2] != pos_pre[2]) {
 		Vector3D delta = pos_now - pos_pre;
 		Vector3D base_new = Vector3D(FRAME_BASE) + delta;
-		for (int i = 0; i < 3; ++i) {
+		for (int i = 0; i < 2; ++i) {
 			if (abs(base_new[i]) > FRAME_LENGTH[i] * 2) {
-				base_new[i] = base_new[i] / abs(base_new[i]) * (FRAME_LENGTH[i] - 0.01);
+				base_new[i] = base_new[i] / abs(base_new[i]) * (FRAME_LENGTH[i] - 0.0001);
 			}
 		}
 		delta = base_new - FRAME_BASE;
 		for (int i = 0; i < 3; ++i) FRAME_BASE[i] = base_new[i];
 		pos_pre = pos_now;
 		sph.setBase(delta);
+		
+//		printf("base %lf, %lf, %lf\n", FRAME_BASE[0], FRAME_BASE[1], FRAME_BASE[2]);
 	}
 	
 	// cout movement
 	sph.move();
-	glutTimerFunc(40, render, 0);
+	glutTimerFunc(DELTA_TIME, render, 0);
 	glutPostRedisplay();
 }
 
 void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
+		case 'a':
+			sph.add(Particle(Vector3D(0, 0, 0), Vector3D(0, 0, 0)));
+			break;
 		case 'c':
 			debug = !debug;
 			break;
@@ -228,7 +237,7 @@ void keyboard(unsigned char key, int x, int y) {
 
 Vector3D coordinateTrans(int x, int y) {
 	x -= WINDOW_WIDTH / 2; y -= WINDOW_HEIGHT / 2;
-	return Vector3D((x + 0.0) / WINDOW_WIDTH * (FRAME_LENGTH[0] * 2 + 2), (y + 0.0) / WINDOW_HEIGHT * (FRAME_LENGTH[1] * 2 + 2) * -1, 0);
+	return Vector3D((x + 0.0) / WINDOW_WIDTH * (FRAME_LENGTH[0] * 2.2f), (y + 0.0) / WINDOW_HEIGHT * (FRAME_LENGTH[1] * 2.2f) * -1, 0);
 }
 
 void mousepress(int button, int state, int x, int y) {
@@ -257,11 +266,12 @@ int main(int argc, char **argv) {
 	glutCreateWindow("SPH - ^.^");
 
 	init();
-	for (int i = -5; i < 5; i+=2 )
-//		sph.add(Particle(Vector3D(0 + i * 0.8, 0, 0), Vector3D(0, 0, 0)));
-		for (int j = -5; j < 5; j+=2)
-			for (int k = -5; k < 5; k+=2)
-				sph.add(Particle(Vector3D(0 + i * 0.4, 0 + j * 0.4, 0 + k * 0.4), Vector3D(0, 0, 0)));
+// sph.add(Particle(Vector3D(0, 0, 0), Vector3D(0, 0, 0)));
+	
+	for (int i = 0; i < 12; i+=1 )
+		for (int j = 0; j < 12; j+=1)
+			for (int k = 0; k < 12; k+=1)
+				sph.add(Particle(Vector3D(-0.50 + i * 0.03, -0.2 + j * 0.03, -0.05 + k * 0.03), Vector3D(0, 0, 0)));
 				//sph.add(Particle(Vector3D(0 + i, 0 + j * 0.8, 0 + k), Vector3D(0, 0, 0)));
 
 	glutDisplayFunc(display);

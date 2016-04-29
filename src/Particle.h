@@ -20,17 +20,18 @@ public:
 	Particle(const Vector3D &_position, const Vector3D &_velocity): position(_position), velocity(_velocity) {}
 	
 	void countDensity(const vector<Particle> &neighbour, const vector<double> &r) {
-		density = 1;
+		density = mass * KERNAL_POLY_CONSTANT / pow(SMOOTHING_WIDTH, 3);
 		int l = neighbour.size();
 		for (int i = 0; i < l; ++i) {
 			density += KernelPoly(neighbour[i], r[i]) * mass;
 		}
 	}
 	void countPressure(const vector<Particle> &neighbour, const vector<double> &r) {
-		pressure =  2 * (density - 12);
+		// pressure =  1000 * (density - 12);
+		pressure = pow(density / 1000.0, 7) - 1;
 	}
 	void countForce(const vector<Particle> &neighbour, const vector<double> &r) {
-		force = Vector3D(0, g, 0);
+		force = Vector3D(0, 0, 0);
 		int l = neighbour.size();		
 		for (int i = 0; i < l; ++i) {
 			force += mass * 0.5 / density * KernalSpik(neighbour[i], r[i]) * (pressure + neighbour[i].getPressure());
@@ -40,7 +41,7 @@ public:
 		viscosity = Vector3D(0.0f, 0.0f, 0.0f);
 		int l = neighbour.size();		
 		for (int i = 0; i < l; ++i) {
-			viscosity += 0.1f * mass / density * (neighbour[i].getVelocity() - velocity) * KernalVisc(neighbour[i], r[i]);
+			viscosity += mass / density * (neighbour[i].getVelocity() - velocity) * KernalVisc(neighbour[i], r[i]) * 3e-4;
 		}
 	}
 	void countColorfield(const vector<Particle> &neighbour, const vector<double> &r) {
@@ -51,12 +52,14 @@ public:
 			color_grad += mass / density * KernalPolyGrad(neighbour[i], r[i]);
 			color_lap += mass / density * KernalPolyLap(neighbour[i], r[i]);
 		}
-		if (color_grad.norm() > 1e-6) tenssion = - color_lap * color_grad.unit();
+		if (color_grad.norm() > 1e-6) tenssion = - color_lap * color_grad.unit() * 1e-4;
 		else tenssion = Vector3D(0.0f, 0.0f, 0.0f);
 	}
 	void countVelocity(const Vector3D &base_move) {
 		Vector3D acce = (force + viscosity + tenssion) / density;
-		velocity += acce * DELTA_TIME / 1000 + base_move / DELTA_TIME * 50;	
+		acce[1] += g;
+//		if (base_move.x != 0) printf("%lf %lf\n", (acce * DELTA_TIME / 1000).norm(), (base_move / DELTA_TIME).norm());
+		velocity += acce * DELTA_TIME / 1000 + base_move / DELTA_TIME * 200;	
 	}
 	void move() {
 		//printf("force: %lf, %lf, %lf\n", force[0], force[1], force[2]);
@@ -70,9 +73,14 @@ public:
 	}
 	void check(const Vector3D &bound) {
 		for (int i = 0; i < 3; ++i) {
-			if (abs(position[i]) > bound[i] - 1e-4 && velocity[i] * position[i] > 0) {
+			if (abs(position[i]) > bound[i] - 1e-6) {
+				position[i] = bound[i] * (position[i] / abs(position[i])) * 2 - position[i];
 				velocity[i] *= -0.5f;
 			}
+			/*
+			if (abs(position[i]) > bound[i] - 1e-4 && velocity[i] * position[i] > 0) {
+				velocity[i] *= -0.5f;
+			}*/
 		}
 		//printf("velocity1: %lf, %lf, %lf\n\n", velocity[0], velocity[1], velocity[2]);		
 	}

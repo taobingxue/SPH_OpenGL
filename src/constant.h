@@ -2,12 +2,12 @@
 #define CONSTANT_H
 
 const int PARTICLE_MAX = 1000;
-const double PARTICLE_RADIUS = 2.0f;
-const double GRID_LENGTH = 3.3f;
-const double SMOOTHING_WIDTH = 1;
+const double PARTICLE_RADIUS = 0.045f;
+const double GRID_LENGTH = 0.08f;
+const double SMOOTHING_WIDTH = 0.04f;
 const double SMOOTHING_WIDTH2 = SMOOTHING_WIDTH * SMOOTHING_WIDTH;
 const double SMOOTHING_WIDTH3 = SMOOTHING_WIDTH * SMOOTHING_WIDTH2;
-const double mass = 1;
+const double mass = 0.02f;
 const int DELTA_TIME = 25;
 const double g = -9.8f;
 
@@ -24,8 +24,8 @@ const float color4_sphere[] = {0.5f, 0, 0, 1};
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
 
-const double FRAME_LENGTH[3] = {9, 5, 10};
-double FRAME_BASE[3] = {0, -2, -20};
+const double FRAME_LENGTH[3] = {0.8, 0.8, 0.8};
+double FRAME_BASE[3] = {0, -0.25f, -2.3};
 const double WALL_EDGE[12][3] = {
 	{ - FRAME_LENGTH[0], 0                ,   FRAME_LENGTH[2]},
 	{   FRAME_LENGTH[0], 0                ,   FRAME_LENGTH[2]},
@@ -40,9 +40,9 @@ const double WALL_EDGE[12][3] = {
 	{   0              , - FRAME_LENGTH[1], - FRAME_LENGTH[2]},
 	{   0              ,   FRAME_LENGTH[1], - FRAME_LENGTH[2]}};
 const double WALL_SCALE[12][3] = {
-	{0.1, FRAME_LENGTH[1] * 2, 0.1}, {0.1, FRAME_LENGTH[1] * 2, 0.1}, {0.1, FRAME_LENGTH[1] * 2, 0.1}, {0.1, FRAME_LENGTH[1] * 2, 0.1},
-	{0.1, 0.1, FRAME_LENGTH[2] * 2}, {0.1, 0.1, FRAME_LENGTH[2] * 2}, {0.1, 0.1, FRAME_LENGTH[2] * 2}, {0.1, 0.1, FRAME_LENGTH[2] * 2},
-	{FRAME_LENGTH[0] * 2, 0.1, 0.1}, {FRAME_LENGTH[0] * 2, 0.1, 0.1}, {FRAME_LENGTH[0] * 2, 0.1, 0.1}, {FRAME_LENGTH[0] * 2, 0.1, 0.1}};
+	{0.01, FRAME_LENGTH[1] * 2, 0.01}, {0.01, FRAME_LENGTH[1] * 2, 0.01}, {0.01, FRAME_LENGTH[1] * 2, 0.01}, {0.01, FRAME_LENGTH[1] * 2, 0.01},
+	{0.01, 0.01, FRAME_LENGTH[2] * 2}, {0.01, 0.01, FRAME_LENGTH[2] * 2}, {0.01, 0.01, FRAME_LENGTH[2] * 2}, {0.01, 0.01, FRAME_LENGTH[2] * 2},
+	{FRAME_LENGTH[0] * 2, 0.01, 0.01}, {FRAME_LENGTH[0] * 2, 0.01, 0.01}, {FRAME_LENGTH[0] * 2, 0.01, 0.01}, {FRAME_LENGTH[0] * 2, 0.01, 0.01}};
 
 const int EDGE_TABLE[256]={
 0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,

@@ -25,8 +25,8 @@ public:
 	MarchingCube() {}
 	MarchingCube(const double _bound[], double _l, list<Particle> *_particles):
 		bound(_bound), l(_l),
-		sum_v((1 + (int)_bound[0] * 2 / _l) * (1 + (int)_bound[1] * 2 / _l) * (1 + (int)_bound[2] * 2 / _l)),
-		sum_e((1 + (int)_bound[0] * 2 / _l) * (1 + (int)_bound[1] * 2 / _l) * (1 + (int)_bound[2] * 2 / _l) * 3),
+		sum_v((1 + (int)(_bound[0] * 2 / _l)) * (1 + (int)(_bound[1] * 2 / _l)) * (1 + (int)(_bound[2] * 2 / _l))),
+		sum_e((1 + (int)(_bound[0] * 2 / _l)) * (1 + (int)(_bound[1] * 2 / _l)) * (1 + (int)(_bound[2] * 2 / _l)) * 3),
 		particles(_particles), offset(8), offset_edge(12),
 		intersections(sum_e, NULL),
 		inside(sum_v, NULL),
@@ -34,7 +34,7 @@ public:
 			
 			base = - bound;
 			for (int i = 0; i < 3; ++i) {
-				total_edge[i] = (int)_bound[i] * 2 / l;
+				total_edge[i] = (int)(_bound[i] * 2 / l);
 			}
 			
 			dx = (total_edge[2] + 1) * (total_edge[1] + 1);
