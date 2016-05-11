@@ -1,0 +1,6 @@
+build/MarchingCube/MarchingCube.cpp build/MarchingCube/MarchingCube.cpp: \
+ MarchingCube/MarchingCube.cpp MarchingCube/MarchingCube.h \
+ MarchingCube/../includes/constant.h MarchingCube/lookup_list.h \
+ MarchingCube/../SPH/Particle.h \
+ MarchingCube/../SPH/../includes/vector3D.h \
+ MarchingCube/../includes/vector3D.h

@@ -1,0 +1,2 @@
+build/SPH/Particle.cpp build/SPH/Particle.cpp: SPH/Particle.cpp \
+ SPH/Particle.h SPH/../includes/vector3D.h SPH/../includes/constant.h

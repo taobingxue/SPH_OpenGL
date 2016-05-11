@@ -1,0 +1,5 @@
+1. Use better estimate for the cut point instead of the mid of the edge.
+2. Separate particles by spatial distribution
+3. Count neighbor lists and closest particle by distribution
+3. better parameters QAQ
+...
