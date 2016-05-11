@@ -1,4 +1,0 @@
-build/main.cpp build/main.cpp: main.cpp includes/constant.h \
- includes/vector3D.h SPH/SPH.h SPH/../includes/vector3D.h SPH/Particle.h \
- MarchingCube/MarchingCube.h MarchingCube/lookup_list.h \
- MarchingCube/../SPH/Particle.h MarchingCube/../includes/vector3D.h
